@@ -60,9 +60,9 @@ def reader(name):
 
 if __name__ == '__main__':
     ret = 0
-    for arr_of_lines in reader('day3-data2'):
+    for arr_of_lines in reader('day3-data1'):
         # print(arr_of_lines)
         ret += process_line(arr_of_lines)
 
-    assert ret == 537732
+    assert ret == 537732, ret
     print(ret)
