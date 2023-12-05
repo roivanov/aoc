@@ -1,10 +1,14 @@
 #!/bin/env python3
 
-RED='red'
-GREEN='green'
-BLUE='blue'
-count=0
-games_power=0
+class LineOfEngine:
+    def __init__(self, s: str) -> None:
+        self.s = s
+
+    def len(self):
+        return len(self.s)
+
+    def __getitem__(self, indx):
+        return self.s[indx]
 
 def process_line(arr_of_lines):
     ret = 0
@@ -30,10 +34,10 @@ def process_line(arr_of_lines):
 
 def spot_number(s):
     i = 1
-    while i < len(s):
+    while i < s.len():
         if s[i].isdigit():
             j=i+1
-            while (j < len(s) and s[j].isdigit()):
+            while (j < s.len() and s[j].isdigit()):
                 j+=1
 
             yield i,j
@@ -45,14 +49,14 @@ def reader(name):
     arr = []
     with open(name) as f:
         for line in f.readlines():
-            arr.append('.' + line.strip() + '.')
+            arr.append(LineOfEngine('.' + line.strip() + '.'))
             if len(arr) == 2:
-                yield ['.' * len(arr[0])] + arr
+                yield [LineOfEngine('.' * arr[0].len())] + arr
             elif len(arr) == 3:
                 yield arr
                 del arr[0]
 
-        yield arr + ['.' * len(arr[0])]
+        yield arr + [LineOfEngine('.' * arr[0].len())]
 
 if __name__ == '__main__':
     ret = 0
@@ -60,4 +64,5 @@ if __name__ == '__main__':
         # print(arr_of_lines)
         ret += process_line(arr_of_lines)
 
-print(ret)
+    assert ret == 537732
+    print(ret)
