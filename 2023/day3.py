@@ -40,8 +40,8 @@ class LineOfEngine:
     def number_touches(self, i):
         for a,b,num in self.numbers:
             # print(f"a:{a}, b:{b}, i:{i}")
-            if a <= i <= b:
-                return num
+            if a <= i < b:
+                return a,b,num
 
 def process_line(arr_of_lines):
     ret = 0
@@ -72,17 +72,27 @@ def reader(name):
 
 if __name__ == '__main__':
     ret = 0
+    ret_gears = 0
     for arr_of_lines in reader('day3-data2'):
-        # print([x.s for x in arr_of_lines])
-        # for indx, s in enumerate(arr_of_lines[1]):
-            # if s == '*':
-            #     print(s, indx)
-            #     for i in [0,1,2]:
-            #         print(arr_of_lines[i])
-            #         print(-1, arr_of_lines[i].number_touches(indx-1))
-            #         print(0, arr_of_lines[i].number_touches(indx))
-            #         print(1, arr_of_lines[i].number_touches(indx+1))
+        print('\n'.join([x.s for x in arr_of_lines]))
+        for indx, s in enumerate(arr_of_lines[1]):
+            if s == '*':
+                print(s, indx)
+                gears = []
+                for i in [0,1,2]:
+                    print(arr_of_lines[i])
+                    touches = {arr_of_lines[i].number_touches(indx-x) for x in [1,0,-1]}
+                    touches = {x for x in touches if x}
+                    # assert len(touches) < 2, touches
+                    while len(touches):
+                        gears.append(touches.pop()[-1])
+                print(gears)
+                assert len(gears) < 3
+                if len(gears) == 2:
+                    ret_gears += gears[0] * gears[1]
+
         ret += process_line(arr_of_lines)
 
     assert ret in [537732, 4361], ret
-    print(ret)
+    assert ret_gears == 84883664
+    print(ret, ret_gears)
