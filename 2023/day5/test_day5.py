@@ -19,8 +19,8 @@ class ElfMap:
 
         return i
 
-def test_day5_sample():
-    with open('day5/data1') as f:
+def process(name):
+    with open(name) as f:
         while True:
             line = f.readline()
 
@@ -35,14 +35,17 @@ def test_day5_sample():
 
     min_location = None
     for i in seeds:
-        path = [i]
+        path = i
         for m in ['seed-to-soil', 'soil-to-fertilizer',
                   'fertilizer-to-water', 'water-to-light',
                   'light-to-temperature',
                   'temperature-to-humidity',
                   'humidity-to-location']:
-            path.append(ElfMap.Names[m].map(path[-1]))
-        print(i, path)
-        min_location = min(min_location, path[-1]) if min_location else path[-1]
+            path = ElfMap.Names[m].map(path)
+        min_location = min(min_location, path) if min_location else path
 
-    assert min_location == 35
+    return min_location
+
+def test_day5_sample():
+    assert process('day5/data1') == 35
+    assert process('day5/data2') == 486613012
