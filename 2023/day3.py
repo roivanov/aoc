@@ -3,6 +3,7 @@
 class LineOfEngine:
     def __init__(self, s: str) -> None:
         self.s = s
+        self.numbers = []
 
     def len(self):
         return len(self.s)
@@ -10,40 +11,38 @@ class LineOfEngine:
     def __getitem__(self, indx):
         return self.s[indx]
 
+    def spot_number(self):
+        i = 1
+        while i < len(self.s):
+            if self.s[i].isdigit():
+                j=i+1
+                while (j < len(self.s) and self.s[j].isdigit()):
+                    j+=1
+
+                self.numbers.append([i,j,int(self.s[i:j])])
+                yield i,j
+                i=j
+            else:
+                i+=1
+
+    def number_at(self, i,j):
+        for a,b,num in self.numbers:
+            if a==i and b==j:
+                return num
+
 def process_line(arr_of_lines):
     ret = 0
-    # print(arr_of_lines[1])
-    # breakpoint()
 
-    for i,j in spot_number(arr_of_lines[1]):
-        # print(arr_of_lines[1][i:j])
-        # print("L", arr_of_lines[1][i-1])
-        # print("R", arr_of_lines[1][j])
-        # print('TOP:', arr_of_lines[0][i-1:j+1])
-        # print('DOWN', arr_of_lines[2][i-1:j+1])
+    for i,j in arr_of_lines[1].spot_number():
         arr = arr_of_lines[1][i-1] + \
             arr_of_lines[1][j] + \
                 arr_of_lines[0][i-1:j+1] + \
                     arr_of_lines[2][i-1:j+1]
 
-        # print(arr)
         if any([x != '.' for x in arr ]):
-            ret += int(arr_of_lines[1][i:j])
+            ret += arr_of_lines[1].number_at(i,j)
 
     return ret
-
-def spot_number(s):
-    i = 1
-    while i < s.len():
-        if s[i].isdigit():
-            j=i+1
-            while (j < s.len() and s[j].isdigit()):
-                j+=1
-
-            yield i,j
-            i=j
-        else:
-            i+=1
 
 def reader(name):
     arr = []
@@ -60,9 +59,9 @@ def reader(name):
 
 if __name__ == '__main__':
     ret = 0
-    for arr_of_lines in reader('day3-data1'):
+    for arr_of_lines in reader('day3-data2'):
         # print(arr_of_lines)
         ret += process_line(arr_of_lines)
 
-    assert ret == 537732, ret
+    assert ret in [537732, 4361], ret
     print(ret)
