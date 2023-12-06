@@ -163,14 +163,4 @@ def test_day5_main_small():
 
 def test_day5_main_big():
     data = ElfData('day5/data2')
-    # seeds 1 966 850 685
-    print([data.seeds[x] for x in range(1, len(data.seeds), 2)])
-
-    data.seeds = chain.from_iterable([range(data.seeds[i],
-                                            data.seeds[i]+data.seeds[i+1]) for i in
-           range(0, len(data.seeds), 2)])
-
-    print(len(data.seeds))
-    raise RuntimeError
-
-    assert data.process_intervals() == 36
+    assert data.process_intervals() == 56931769
