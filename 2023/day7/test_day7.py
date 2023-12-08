@@ -53,26 +53,28 @@ class Hand:
         return f"hand: {self.s}"
 
     def __repr__(self) -> str:
-        return f"hand: {self.s} {self.power()}"
+        return f"hand: {self.s} {self.power().name}"
 
     def __lt__(self, other):
-        if self.power() != other.power():
-            return self.power() < other.power()
+        a = self.power()
+        b = other.power()
+        if a != b:
+            return a < b
         else:
-            for a, b in zip(self.s, other.s):
+            for a, b in zip(self.cards, other.cards):
                 if a != b:
                     return a < b
 
         raise RuntimeError('must not be here')
 
 def test_part1_definitions():
-    print(list(Card))
-    print(Card(5))
-    print(Card['A'])
+    # print(list(Card))
+    # print(Card(5))
+    # print(Card['A'])
 
     assert Card(2) < Card['A']
 
-    print(Hand('AQJ5T2').cards)
+    # print(Hand('AQJ5T2').cards)
 
     assert Hand('AAAAA').power() == HandPower.FIVE
     assert Hand('AA8AA').power() == HandPower.FOUR
@@ -84,7 +86,9 @@ def test_part1_definitions():
     assert Hand('23456').power() == HandPower.NONE
 
     assert Hand('33332') > Hand('2AAAA')
+    assert Hand('2AAAA') < Hand('33332')
 
+    assert Hand('KK677') > Hand('KTJJT')
 
 EXAMPLE_DATA = """
 32T3K 765
@@ -102,11 +106,13 @@ def test_part1_sample():
             hand = Hand(hand_str)
             hands[hand] = int(bid)
 
+    print(', '.join([f"{x} {x.power().name} {hands[x]} * {(1+indx)}"
+                    for indx,x in enumerate(sorted(hands))]))
     win = sum([hands[x] * (1+indx) for indx,x in enumerate(sorted(hands))])
     assert win == 6440
 
 
-def test_part1_sample():
+def test_part1_problem():
     print(Hand('32T3J').power(), Hand('A9942').power())
     assert Hand('32T3J') < Hand('A9942')
 
@@ -138,4 +144,4 @@ def test_part1_sample():
     assert win < 252410386
     assert win > 251498971
     assert len(hands) == 1000
-    assert win == 1
+    assert win == 251545216
