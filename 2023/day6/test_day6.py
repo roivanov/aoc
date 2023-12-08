@@ -1,12 +1,31 @@
+import math
+
 def hold(iter):
     for t, d in iter:
         print(t,d)
         count=0
-        for p in range(0, t):
-            s = p
-            if s * (t-p) > d:
-                count+=1
-        yield count
+        """
+speed = p(time to hold)
+distance = p*(t-p)
+p*(t-p)-d=0
+pt - p^2 -d = 0
+a=-1
+b=t
+c=-d
+
+t +- sqrt(t^2-4d)
+---
+2
+        """
+        sq = math.sqrt(t*t-4*d)
+        x1 = math.ceil((t-sq)/2)
+        x2 = math.floor((t+sq)/2)
+        if x1==(t-sq)/2:
+            x1+=1
+        if x2==(t+sq)/2:
+            x2-=1
+        yield x2-x1+1
+
 
 def solve(fname, kerning=False):
     with open(fname) as f:
@@ -35,4 +54,4 @@ def test_part1_puzzle1():
     assert solve('day6/data1part1puzzle.txt') == 140220
 
 def test_part2_puzzle1():
-    assert solve('day6/data1part1puzzle.txt', kerning=True) == 140220
+    assert solve('day6/data1part1puzzle.txt', kerning=True) == 39570185
