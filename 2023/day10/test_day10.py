@@ -1,3 +1,4 @@
+from math import atan2, pi
 from pathlib import Path
 
 SAMPLE1 = """
@@ -43,6 +44,12 @@ class Coord:
     def __str__(self) -> str:
         return f"({self.x},{self.y})"
 
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __radd__(self, other):
+        return other + self.x
+
 class Vector(Coord):
     def __repr__(self) -> str:
         return f"V:{self}"
@@ -50,9 +57,12 @@ class Vector(Coord):
     def reversed(self):
         return Vector(-self.x, -self.y)
 
+    @property
+    def angle(self):
+        return 180 * atan2(self.y, self.x)/pi
+
 class Point(Coord):
-    def __add__(self, other:Vector):
-        return Point(self.x + other.x, self.y + other.y)
+    pass
 
 VECTORS = {
     '|': [(Vector(1,0), Vector(1,0)),],
@@ -78,7 +88,8 @@ class PipePath:
             if line:
                 self.map.append([x for x in line.strip()])
 
-        print(self.map)
+    def len(self):
+        return len(self.map)
 
     @property
     def start(self):
@@ -93,35 +104,32 @@ class PipePath:
         else:
             return None
 
-    def iter_moves(self, start, direct):
+    def next(self, start, direct):
         for v in direct:
             val = self.get_at(start + v)
             if val in ['.', None]:
                 continue
-            if val in VECTORS:
-                for first, second in VECTORS[val]:
-                    if v == first:
-                        yield first, second
-            else:
-                raise IndexError(f"bad {val}")
 
-    def next(self, start, direct):
-        print(start, direct)
-        moves = list(self.iter_moves(start, direct))
-
-        assert len(moves) == 2 if len(direct) == 8 else 1
-
-        for each in moves:
-            yield each
+            for first, second in VECTORS[val]:
+                if v == first:
+                    yield first, second
 
     @property
     def farthest(self):
+        # f = open('dump', 'w')
         start = self.start
-        (v11, v12), (v21, v22) = self.next(self.start, ALL_DIRECTIONS)
-        print((v11, v12), (v21, v22))
+        (v11, v12), (v21, v22) = self.next(start, ALL_DIRECTIONS)
+        # print("V", (v11, v12), (v21, v22))
+        # print("A", (v11.angle, v12.angle), (v21.angle, v22.angle))
         next_step = start + v11
-        last_step = start + v22
+        last_step = start + v21
+        # print(start, self.get_at(start))
+        # print(next_step, self.get_at(next_step))
+        # print(last_step, self.get_at(last_step))
+        # breakpoint()
         count = 2
+        # f.write(f"{start} {self.get_at(start)}\n")
+        # f.write(f"{next_step} {self.get_at(next_step)}\n")
 
         # do we need to compare directions here?
         while next_step != last_step:
@@ -130,14 +138,15 @@ class PipePath:
             assert len(ret) == 1
             v11, v12 = ret[0]
             next_step += v11
+            # f.write(f"{next_step} {self.get_at(next_step)}\n")
 
+        # f.write(f"{last_step} {self.get_at(last_step)}\n")
+        # f.close()
+        print(count)
         return count // 2
 
 def test_seq_example1():
     pp1 = PipePath(SAMPLE1.splitlines())
-
-    # with open(Path(__file__).parent / 'input.txt') as f:
-    #     pass
 
     assert pp1.start == Point(1,1)
     assert pp1.farthest == 4
@@ -159,3 +168,28 @@ def test_seq_example4():
 
     assert pp1.start == Point(2,0)
     assert pp1.farthest == 8
+
+def test_seq_test1():
+    for v in VECTORS.values():
+        assert len(v) == 2
+        assert sum([sum(y) for y in v]) == 0
+
+    with open(Path(__file__).parent / 'input.txt') as f:
+        pp1 = PipePath(f.readlines())
+
+    start = pp1.start
+    # breakpoint()
+    (v11, v12), (v21, v22) = pp1.next(start, ALL_DIRECTIONS)
+    # print("V", (v11, v12), (v21, v22))
+    # print("A", (v11.angle, v12.angle), (v21.angle, v22.angle))
+    next_step = start + v11
+    last_step = start + v21
+    # print(start, pp1.get_at(start))
+    # print(next_step, pp1.get_at(next_step))
+    # print(last_step, pp1.get_at(last_step))
+    assert {pp1.get_at(next_step), pp1.get_at(last_step)} == {'|', 'L'}
+
+    assert pp1.len() == 140
+    assert pp1.start == Point(25,108), f"{pp1.start}"
+    assert pp1.get_at(Point(25,108)) == 'S'
+    assert pp1.farthest == 6701
