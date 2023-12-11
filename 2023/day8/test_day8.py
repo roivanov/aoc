@@ -1,4 +1,5 @@
 from itertools import cycle
+from pathlib import Path
 import math
 import re
 
@@ -107,7 +108,7 @@ def test_demo1_part2():
     assert steps * len(path) == 6
 
 def test_day1():
-    with open('day8/data1.txt') as f:
+    with open(Path(__file__).parent / 'input.txt') as f:
         lines = f.readlines()
 
     path = lines[0].strip('\n')
@@ -131,7 +132,7 @@ def test_day1():
     assert (steps * len(path)) == 21883
 
 def test_day2():
-    with open('day8/data1.txt') as f:
+    with open(Path(__file__).parent / 'input.txt') as f:
         lines = f.readlines()
 
     path = lines[0].strip('\n')
