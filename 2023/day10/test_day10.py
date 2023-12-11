@@ -116,20 +116,11 @@ class PipePath:
 
     @property
     def farthest(self):
-        # f = open('dump', 'w')
         start = self.start
         (v11, v12), (v21, v22) = self.next(start, ALL_DIRECTIONS)
-        # print("V", (v11, v12), (v21, v22))
-        # print("A", (v11.angle, v12.angle), (v21.angle, v22.angle))
         next_step = start + v11
         last_step = start + v21
-        # print(start, self.get_at(start))
-        # print(next_step, self.get_at(next_step))
-        # print(last_step, self.get_at(last_step))
-        # breakpoint()
         count = 2
-        # f.write(f"{start} {self.get_at(start)}\n")
-        # f.write(f"{next_step} {self.get_at(next_step)}\n")
 
         # do we need to compare directions here?
         while next_step != last_step:
@@ -138,11 +129,7 @@ class PipePath:
             assert len(ret) == 1
             v11, v12 = ret[0]
             next_step += v11
-            # f.write(f"{next_step} {self.get_at(next_step)}\n")
 
-        # f.write(f"{last_step} {self.get_at(last_step)}\n")
-        # f.close()
-        print(count)
         return count // 2
 
 def test_seq_example1():
@@ -178,15 +165,9 @@ def test_seq_test1():
         pp1 = PipePath(f.readlines())
 
     start = pp1.start
-    # breakpoint()
-    (v11, v12), (v21, v22) = pp1.next(start, ALL_DIRECTIONS)
-    # print("V", (v11, v12), (v21, v22))
-    # print("A", (v11.angle, v12.angle), (v21.angle, v22.angle))
+    (v11, _), (v21, _) = pp1.next(start, ALL_DIRECTIONS)
     next_step = start + v11
     last_step = start + v21
-    # print(start, pp1.get_at(start))
-    # print(next_step, pp1.get_at(next_step))
-    # print(last_step, pp1.get_at(last_step))
     assert {pp1.get_at(next_step), pp1.get_at(last_step)} == {'|', 'L'}
 
     assert pp1.len() == 140
