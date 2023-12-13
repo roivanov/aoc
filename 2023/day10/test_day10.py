@@ -2,7 +2,7 @@ from collections import deque
 from math import atan2, pi
 from pathlib import Path
 
-from input import SAMPLE21
+from input import SAMPLE21, SAMPLE22
 
 import pytest
 
@@ -113,6 +113,9 @@ ALL_DIRECTIONS = [v for v in [Vector(x,y)
                               for y in [-1,0,1]]
                               if v != Vector(0,0)]
 
+VERT_HORIZ_DIR = [v for v in ALL_DIRECTIONS
+                  if 0 in {v.x, v.y}]
+
 class PipePath:
     def __init__(self, lines) -> None:
         self.map = []
@@ -135,7 +138,10 @@ class PipePath:
 
     def get_at(self, p):
         if p.x >=0 and p.y >= 0:
-            return self.map[p.x][p.y]
+            try:
+                return self.map[p.x][p.y]
+            except IndexError:
+                return None
         else:
             return None
 
@@ -182,7 +188,7 @@ class PipePath:
         yet_to_check = deque([p,])
 
         for each in yet_to_check:
-            for dir in ALL_DIRECTIONS:
+            for dir in VERT_HORIZ_DIR:
                 coord = each + dir
                 p1 = Point(coord.x, coord.y)
                 # print(p1.x, p1.y)
@@ -208,30 +214,24 @@ class PipePath:
             v11, v12 = list(self.next(next_step, [v12,]))[0]
             next_step += v11
 
-        assert len(turn_points) == 12
         turn_points.append(start)
         lines = []
         for i in range(len(turn_points)-1):
             lines.append(Line(turn_points[i], turn_points[i+1]))
-
-        assert len(lines) == 12
-        print(self)
 
         for p in self.each_point():
             if self.get_at(p) == '.':
                 tline = Line(start, p)
                 crosses = tline.count_intersect(lines)
                 if crosses > 0 and crosses % 2 == 0:
-                    self.set_at(p, str(crosses))
+                    self.set_at(p, 'I')
+                    print(p)
                     for n in self.neighbors(p):
-                        self.set_at(n, str(crosses))
+                        self.set_at(n, 'I')
 
         print(self)
 
-        def isdigit_but7(x):
-            return x != '7' and x.isdigit()
-
-        return sum([1 if isdigit_but7(self.get_at(x)) else 0
+        return sum([1 if self.get_at(x) == 'I' else 0
                     for x in self.each_point()])
 
 def test_seq_example1():
@@ -297,6 +297,22 @@ def test_seq_test21():
     assert pp1.farthest == 23
 
     assert pp1.straight == 4
+
+def test_seq_test22():
+    pp1 = PipePath(SAMPLE22.splitlines())
+    assert pp1.len() == 10
+    start = pp1.start
+    assert start == Point(4,12), f"{start}"
+    assert pp1.get_at(Point(4,12)) == 'S'
+
+    (v11, _), (v21, _) = pp1.next(start, ALL_DIRECTIONS)
+    next_step = start + v11
+    last_step = start + v21
+    assert {pp1.get_at(next_step), pp1.get_at(last_step)} == {'7', 'J'}
+
+    assert pp1.farthest == 70
+
+    assert pp1.straight == 8
 
 def test_so6():
     """
