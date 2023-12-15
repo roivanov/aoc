@@ -34,6 +34,12 @@ class TheMap:
                 if self.map[x][y] == '#':
                     yield x,y
 
+    @property
+    def dist(self):
+        comb = combinations(self.galaxy(), 2)
+
+        return sum([abs(a-x) + abs(b-y) for (a,b),(x,y) in comb])
+
 
 def test_seq_example1():
     m = TheMap(SAMPLE_DATA1)
@@ -49,3 +55,9 @@ def test_seq_example1():
 
     dist = sum([abs(a-x) + abs(b-y) for (a,b),(x,y) in comb])
     assert dist == 374
+    assert m.dist == 374
+
+def test_input():
+    m = TheMap((Path(__file__).parent / 'input.txt').read_text())
+    assert len(m.map) == 146
+    assert m.dist == 10033566
