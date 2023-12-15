@@ -1,5 +1,6 @@
 from enum import IntEnum, auto
 from itertools import groupby
+from pathlib import Path
 
 class Card(IntEnum):
     TWO = 2
@@ -119,7 +120,7 @@ def test_part1_problem():
     assert Hand('3JKKQ').power() == HandPower.PAIR
 
     hands = {}
-    with open('day7/data1') as f:
+    with open(Path(__file__).parent / 'input.txt') as f:
         for line in f.readlines()[:1006]:
             # if line:
             hand_str, bid = line.strip('\n').split(' ')
